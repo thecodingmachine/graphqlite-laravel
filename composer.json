@@ -1,0 +1,47 @@
+{
+    "name" : "thecodingmachine/graphqlite-laravel",
+    "description" : "A Laravel service provider package to help you get started with GraphQLite in Laravel.",
+    "keywords" : [
+        "GraphQL",
+        "GraphQLite",
+        "Laravel"
+    ],
+    "homepage" : "https://github.com/thecodingmachine/graphqlite",
+    "type" : "library",
+    "license" : "MIT",
+    "authors" : [{
+            "name" : "David Négrier",
+            "email" : "d.negrier@thecodingmachine.com",
+            "homepage" : "http://mouf-php.com"
+        }
+    ],
+    "require" : {
+        "php" : ">=7.1",
+        "thecodingmachine/graphqlite" : "^3.0",
+        "illuminate/console": "^5.0",
+        "illuminate/container": "^5.0",
+        "illuminate/support": "^5.0",
+        "illuminate/cache": "^5.0"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "TheCodingMachine\\GraphQLite\\Laravel\\" : "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0.x-dev"
+        },
+        "laravel": {
+            "providers": [
+                "TheCodingMachine\\GraphQLite\\Laravel\\Providers\\GraphQLiteServiceProvider"
+            ]
+        }
+    },
+    "require-dev": {
+        "orchestra/testbench": "^3.5.5",
+        "ext-sqlite3": "*"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
