@@ -2,10 +2,16 @@
 
 namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
+use GraphQL\Error\Debug;
+use GraphQL\Server\StandardServer;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use function is_iterable;
+use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
+use TheCodingMachine\GraphQLite\Laravel\Middlewares\GraphQLMiddleware;
 use TheCodingMachine\GraphQLite\Schema;
 use TheCodingMachine\GraphQLite\SchemaFactory;
 use GraphQL\Type\Schema as WebonyxSchema;
@@ -22,6 +28,10 @@ class GraphQLiteServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../config/graphqlite.php' => config_path('graphqlite.php'),
         ]);
+
+        /** @var Router $router */
+        $router = $this->app['router'];
+        $router->aliasMiddleware('graphqlite', GraphQLMiddleware::class);
     }
 
     /**
@@ -33,14 +43,24 @@ class GraphQLiteServiceProvider extends ServiceProvider
     {
         $this->app->bind(WebonyxSchema::class, Schema::class);
 
+        $this->app->bind(HttpMessageFactoryInterface::class, DiactorosFactory::class);
+
+        $this->app->singleton(GraphQLMiddleware::class, function (Application $app) {
+            $debug = config('graphqlite.debug', Debug::RETHROW_UNSAFE_EXCEPTIONS);
+            $uri = config('graphqlite.uri', '/graphql');
+
+            return new GraphQLMiddleware($app[StandardServer::class], $app[HttpMessageFactoryInterface::class], $uri, $debug);
+
+        });
+
         $this->app->singleton(SchemaFactory::class, function (Application $app) {
             $service = new SchemaFactory($app->make(Repository::class), $app);
 
-            $controllers = config('controllers', 'App\\Http\\Controllers');
+            $controllers = config('graphqlite.controllers', 'App\\Http\\Controllers');
             if (!is_iterable($controllers)) {
                 $controllers = [ $controllers ];
             }
-            $types = config('types', 'App\\');
+            $types = config('graphqlite.types', 'App\\');
             if (!is_iterable($types)) {
                 $types = [ $types ];
             }

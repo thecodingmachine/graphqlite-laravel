@@ -1,4 +1,7 @@
 <?php
+
+use GraphQL\Error\Debug;
+
 return [
     /*
      |--------------------------------------------------------------------------
@@ -15,4 +18,6 @@ return [
      */
     'controllers' => 'App\\Http\\Controllers',
     'types' => 'App\\',
+    'debug' => Debug::RETHROW_UNSAFE_EXCEPTIONS,
+    'uri' => '/graphql',
 ];

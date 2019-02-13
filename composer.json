@@ -21,7 +21,9 @@
         "illuminate/console": "^5.0",
         "illuminate/container": "^5.0",
         "illuminate/support": "^5.0",
-        "illuminate/cache": "^5.0"
+        "illuminate/cache": "^5.0",
+        "symfony/psr-http-message-bridge": "^1",
+        "zendframework/zend-diactoros": "^1.8.6"
     },
     "autoload" : {
         "psr-4" : {
@@ -40,6 +42,7 @@
     },
     "require-dev": {
         "orchestra/testbench": "^3.5.5",
+        "phpunit/phpunit": "^7.5.4",
         "ext-sqlite3": "*"
     },
     "minimum-stability": "dev",
