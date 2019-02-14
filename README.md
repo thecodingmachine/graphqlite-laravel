@@ -4,10 +4,9 @@
 [![Build Status](https://travis-ci.org/thecodingmachine/graphqlite-laravel.svg?branch=master)](https://travis-ci.org/thecodingmachine/graphqlite-laravel)
 
 
-Laravel and Lumen GraphQLite bindings
-=====================================
+Laravel GraphQLite bindings
+===========================
 
-GraphQLite integration package for Laravel and Lumen.
+GraphQLite integration package for Laravel.
 
-- See [Laravel documentation](https://graphqlite.thecodingmachine.io/tdbm/doc/install_laravel.html)
-- See [Lumen documentation](https://graphqlite.thecodingmachine.io/tdbm/doc/install_lumen.html)
+See [documentation](https://graphqlite.thecodingmachine.io/docs/laravel-package.html)
