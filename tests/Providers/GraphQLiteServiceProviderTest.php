@@ -22,8 +22,8 @@ class GraphQLiteServiceProviderTest extends TestCase
 
     public function testHttpQuery()
     {
-        $response = $this->json('POST', '/graphql', ['query' => '{ hello(name: "David") }']);
-        echo $response->getStatusCode();
-        echo $response->getContent();
+        $response = $this->json('POST', '/graphql', ['query' => '{ dummyQuery }']);
+        $this->assertSame(200, $response->getStatusCode());
+        $response->assertJson(["data" => ["dummyQuery" => "This is a placeholder query. Please create a query using the @Query annotation."]]);
     }
 }

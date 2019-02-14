@@ -27,13 +27,6 @@ class GraphQLiteController
     private $httpMessageFactory;
     /** @var StandardServer */
     private $standardServer;
-    /** @var string[] */
-    private $graphqlHeaderList = ['application/graphql'];
-    /** @var string[] */
-    private $allowedMethods = [
-        'GET',
-        'POST',
-    ];
     /** @var bool|int */
     private $debug;
 
@@ -53,10 +46,6 @@ class GraphQLiteController
      */
     public function index(Request $request): JsonResponse
     {
-        /*if (!$this->isGraphqlRequest($request)) {
-            return $next($request);
-        }*/
-
         $psr7Request = $this->httpMessageFactory->createRequest($request);
 
         if (strtoupper($request->getMethod()) === "POST" && empty($psr7Request->getParsedBody())) {
@@ -72,25 +61,12 @@ class GraphQLiteController
         $uploadMiddleware = new UploadMiddleware();
         $psr7Request = $uploadMiddleware->processRequest($psr7Request);
 
-
-        // Hack for Graph
-        /*if (strtoupper($request->getMethod()) == "GET") {
-            $params = $request->getQueryParams();
-            $params["variables"] = $params["variables"] === 'undefined' ? null : $params["variables"];
-            $request = $request->withQueryParams($params);
-        } else {
-            $params = $request->getParsedBody();
-            $params["variables"] = $params["variables"] === 'undefined' ? null : $params["variables"];
-            $request = $request->withParsedBody($params);
-        }*/
-
         $result = $this->handlePsr7Request($psr7Request);
 
         $response = new JsonResponse($result);
 
         return $response;
     }
-
 
     private function handlePsr7Request(ServerRequestInterface $request): array
     {
@@ -109,37 +85,4 @@ class GraphQLiteController
         }
         throw new RuntimeException('Unexpected response from StandardServer::executePsrRequest'); // @codeCoverageIgnore
     }
-
-    /*private function isGraphqlRequest(Request $request) : bool
-    {
-        return $this->isMethodAllowed($request) && ($this->hasUri($request) || $this->hasGraphqlHeader($request));
-    }
-
-    private function isMethodAllowed(Request $request) : bool
-    {
-        return in_array($request->getMethod(), $this->allowedMethods, true);
-    }
-
-    private function hasUri(Request $request) : bool
-    {
-        return $this->graphqlUri === $request->getPathInfo();
-    }
-
-    private function hasGraphqlHeader(Request $request) : bool
-    {
-        if (! $request->headers->has('content-type')) {
-            return false;
-        }
-
-        $requestHeaderList = $request->headers->get('content-type', null, false);
-        if ($requestHeaderList === null) {
-            return false;
-        }
-        foreach ($this->graphqlHeaderList as $allowedHeader) {
-            if (in_array($allowedHeader, $requestHeaderList, true)) {
-                return true;
-            }
-        }
-        return false;
-    }*/
 }
