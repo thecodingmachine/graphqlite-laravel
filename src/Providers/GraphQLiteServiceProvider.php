@@ -3,6 +3,7 @@
 namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 use GraphQL\Error\Debug;
+use GraphQL\Server\ServerConfig;
 use GraphQL\Server\StandardServer;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Foundation\Application;
@@ -48,6 +49,16 @@ class GraphQLiteServiceProvider extends ServiceProvider
             $debug = config('graphqlite.debug', Debug::RETHROW_UNSAFE_EXCEPTIONS);
 
             return new GraphQLiteController($app[StandardServer::class], $app[HttpMessageFactoryInterface::class], $debug);
+        });
+
+        $this->app->singleton(StandardServer::class, function (Application $app) {
+            return new StandardServer($app[ServerConfig::class]);
+        });
+
+        $this->app->singleton(ServerConfig::class, function (Application $app) {
+            $serverConfig = new ServerConfig();
+            $serverConfig->setSchema($app[Schema::class]);
+            return $serverConfig;
         });
 
         $this->app->singleton(SchemaFactory::class, function (Application $app) {
