@@ -11,6 +11,7 @@ use Illuminate\Support\ServiceProvider;
 use function is_iterable;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
+use TheCodingMachine\GraphQLite\Laravel\Controllers\GraphQLiteController;
 use TheCodingMachine\GraphQLite\Laravel\Middlewares\GraphQLMiddleware;
 use TheCodingMachine\GraphQLite\Schema;
 use TheCodingMachine\GraphQLite\SchemaFactory;
@@ -29,9 +30,7 @@ class GraphQLiteServiceProvider extends ServiceProvider
             __DIR__.'/../../config/graphqlite.php' => config_path('graphqlite.php'),
         ]);
 
-        /** @var Router $router */
-        $router = $this->app['router'];
-        $router->aliasMiddleware('graphqlite', GraphQLMiddleware::class);
+        $this->loadRoutesFrom(__DIR__.'/../routes/routes.php');
     }
 
     /**
@@ -45,12 +44,10 @@ class GraphQLiteServiceProvider extends ServiceProvider
 
         $this->app->bind(HttpMessageFactoryInterface::class, DiactorosFactory::class);
 
-        $this->app->singleton(GraphQLMiddleware::class, function (Application $app) {
+        $this->app->singleton(GraphQLiteController::class, function (Application $app) {
             $debug = config('graphqlite.debug', Debug::RETHROW_UNSAFE_EXCEPTIONS);
-            $uri = config('graphqlite.uri', '/graphql');
 
-            return new GraphQLMiddleware($app[StandardServer::class], $app[HttpMessageFactoryInterface::class], $uri, $debug);
-
+            return new GraphQLiteController($app[StandardServer::class], $app[HttpMessageFactoryInterface::class], $debug);
         });
 
         $this->app->singleton(SchemaFactory::class, function (Application $app) {

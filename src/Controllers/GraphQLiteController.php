@@ -1,9 +1,10 @@
 <?php
 
 
-namespace TheCodingMachine\GraphQLite\Laravel\Middlewares;
+namespace TheCodingMachine\GraphQLite\Laravel\Controllers;
 
-use Closure;
+
+use Illuminate\Http\Request;
 use GraphQL\Error\Debug;
 use GraphQL\Executor\ExecutionResult;
 use GraphQL\Executor\Promise\Promise;
@@ -16,10 +17,9 @@ use RuntimeException;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
 
-class GraphQLMiddleware
+class GraphQLiteController
 {
     /**
      * @var HttpMessageFactoryInterface
@@ -27,8 +27,6 @@ class GraphQLMiddleware
     private $httpMessageFactory;
     /** @var StandardServer */
     private $standardServer;
-    /** @var string */
-    private $graphqlUri;
     /** @var string[] */
     private $graphqlHeaderList = ['application/graphql'];
     /** @var string[] */
@@ -39,11 +37,10 @@ class GraphQLMiddleware
     /** @var bool|int */
     private $debug;
 
-    public function __construct(StandardServer $standardServer, HttpMessageFactoryInterface $httpMessageFactory = null, string $graphqlUri = '/graphql', ?int $debug = Debug::RETHROW_UNSAFE_EXCEPTIONS)
+    public function __construct(StandardServer $standardServer, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = Debug::RETHROW_UNSAFE_EXCEPTIONS)
     {
         $this->standardServer = $standardServer;
         $this->httpMessageFactory = $httpMessageFactory ?: new DiactorosFactory();
-        $this->graphqlUri = $graphqlUri;
         $this->debug = $debug === null ? false : $debug;
     }
 
@@ -54,11 +51,11 @@ class GraphQLMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function index(Request $request): JsonResponse
     {
-        if (!$this->isGraphqlRequest($request)) {
+        /*if (!$this->isGraphqlRequest($request)) {
             return $next($request);
-        }
+        }*/
 
         $psr7Request = $this->httpMessageFactory->createRequest($request);
 
@@ -113,7 +110,7 @@ class GraphQLMiddleware
         throw new RuntimeException('Unexpected response from StandardServer::executePsrRequest'); // @codeCoverageIgnore
     }
 
-    private function isGraphqlRequest(Request $request) : bool
+    /*private function isGraphqlRequest(Request $request) : bool
     {
         return $this->isMethodAllowed($request) && ($this->hasUri($request) || $this->hasGraphqlHeader($request));
     }
@@ -144,5 +141,5 @@ class GraphQLMiddleware
             }
         }
         return false;
-    }
+    }*/
 }

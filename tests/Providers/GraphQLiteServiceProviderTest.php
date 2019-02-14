@@ -20,9 +20,10 @@ class GraphQLiteServiceProviderTest extends TestCase
         $this->assertInstanceOf(Schema::class, $schema);
     }
 
-    /*public function testHttpQuery()
+    public function testHttpQuery()
     {
         $response = $this->json('POST', '/graphql', ['query' => '{ hello(name: "David") }']);
+        echo $response->getStatusCode();
         echo $response->getContent();
-    }*/
+    }
 }
