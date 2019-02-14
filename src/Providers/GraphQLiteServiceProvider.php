@@ -14,6 +14,7 @@ use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use TheCodingMachine\GraphQLite\Laravel\Controllers\GraphQLiteController;
 use TheCodingMachine\GraphQLite\Laravel\Middlewares\GraphQLMiddleware;
+use TheCodingMachine\GraphQLite\Laravel\SanePsr11ContainerAdapter;
 use TheCodingMachine\GraphQLite\Schema;
 use TheCodingMachine\GraphQLite\SchemaFactory;
 use GraphQL\Type\Schema as WebonyxSchema;
@@ -62,7 +63,7 @@ class GraphQLiteServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(SchemaFactory::class, function (Application $app) {
-            $service = new SchemaFactory($app->make(Repository::class), $app);
+            $service = new SchemaFactory($app->make(Repository::class), new SanePsr11ContainerAdapter($app));
 
             $controllers = config('graphqlite.controllers', 'App\\Http\\Controllers');
             if (!is_iterable($controllers)) {
