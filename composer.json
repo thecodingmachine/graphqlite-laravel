@@ -17,7 +17,7 @@
     ],
     "require" : {
         "php" : ">=7.1",
-        "thecodingmachine/graphqlite" : "^3.0",
+        "thecodingmachine/graphqlite" : "~4.0.0",
         "illuminate/console": "^5.0",
         "illuminate/container": "^5.0",
         "illuminate/support": "^5.0",
@@ -32,7 +32,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0.x-dev"
+            "dev-master": "4.0.x-dev"
         },
         "laravel": {
             "providers": [
