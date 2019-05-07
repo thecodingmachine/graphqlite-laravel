@@ -80,6 +80,10 @@ class GraphQLiteServiceProvider extends ServiceProvider
                 $service->addTypeNamespace($namespace);
             }
 
+            if ($this->app->environment('production')) {
+                $service->prodMode();
+            }
+
             return $service;
         });
 
