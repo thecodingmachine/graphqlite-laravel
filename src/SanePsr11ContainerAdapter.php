@@ -5,6 +5,7 @@ namespace TheCodingMachine\GraphQLite\Laravel;
 
 
 use function class_exists;
+use Illuminate\Container\EntryNotFoundException;
 use Illuminate\Contracts\Container\Container;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -54,7 +55,12 @@ class SanePsr11ContainerAdapter implements ContainerInterface
      */
     public function has($id)
     {
-        if (class_exists($id)) {
+        if (class_exists($id) && !$this->container->has($id)) {
+            try {
+                $this->container->get($id);
+            } catch (EntryNotFoundException $e) {
+                return false;
+            }
             return true;
         }
         return $this->container->has($id);
