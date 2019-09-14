@@ -18,10 +18,10 @@
     "require" : {
         "php" : ">=7.1",
         "thecodingmachine/graphqlite" : "~4.0.0",
-        "illuminate/console": "^5.0",
-        "illuminate/container": "^5.0",
-        "illuminate/support": "^5.0",
-        "illuminate/cache": "^5.0",
+        "illuminate/console": "^5.0|^6.0",
+        "illuminate/container": "^5.0|^6.0",
+        "illuminate/support": "^5.0|^6.0",
+        "illuminate/cache": "^5.0|^6.0",
         "symfony/psr-http-message-bridge": "^1",
         "zendframework/zend-diactoros": "^1.8.6"
     },
