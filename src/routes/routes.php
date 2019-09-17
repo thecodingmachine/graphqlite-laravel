@@ -1,6 +1,4 @@
 <?php
 
-$uri = config('graphqlite.uri', '/graphql');
-
-Route::get($uri, 'TheCodingMachine\\GraphQLite\\Laravel\\Controllers\\GraphQLiteController@index');
-Route::post($uri, 'TheCodingMachine\\GraphQLite\\Laravel\\Controllers\\GraphQLiteController@index');
+Route::get(config('graphqlite.uri', '/graphql'), 'TheCodingMachine\\GraphQLite\\Laravel\\Controllers\\GraphQLiteController@index');
+Route::post(config('graphqlite.uri', '/graphql'), 'TheCodingMachine\\GraphQLite\\Laravel\\Controllers\\GraphQLiteController@index');
