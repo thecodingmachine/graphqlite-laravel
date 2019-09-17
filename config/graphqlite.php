@@ -20,4 +20,5 @@ return [
     'types' => 'App\\',
     'debug' => Debug::RETHROW_UNSAFE_EXCEPTIONS,
     'uri' => '/graphql',
+    'middleware' =>  env('GRAPHQLITE_MW', ['web']),
 ];
