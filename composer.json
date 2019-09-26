@@ -25,6 +25,11 @@
         "symfony/psr-http-message-bridge": "^1",
         "zendframework/zend-diactoros": "^1.8.6"
     },
+    "require-dev": {
+        "orchestra/testbench": "^3.5.5 || ^4",
+        "phpunit/phpunit": "^7.5.4 || ^8.3",
+        "ext-sqlite3": "*"
+    },
     "autoload" : {
         "psr-4" : {
             "TheCodingMachine\\GraphQLite\\Laravel\\" : "src/"
@@ -39,11 +44,6 @@
                 "TheCodingMachine\\GraphQLite\\Laravel\\Providers\\GraphQLiteServiceProvider"
             ]
         }
-    },
-    "require-dev": {
-        "orchestra/testbench": "^3.5.5",
-        "phpunit/phpunit": "^7.5.4",
-        "ext-sqlite3": "*"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
