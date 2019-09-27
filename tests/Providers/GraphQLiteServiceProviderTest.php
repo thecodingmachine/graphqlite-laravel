@@ -22,8 +22,15 @@ class GraphQLiteServiceProviderTest extends TestCase
 
     public function testHttpQuery()
     {
-        $response = $this->json('POST', '/graphql', ['query' => '{ dummyQuery }']);
+        $response = $this->json('POST', '/graphql', ['query' => '{ test }']);
         $this->assertSame(200, $response->getStatusCode(), $response->getContent());
-        $response->assertJson(["data" => ["dummyQuery" => "This is a placeholder query. Please create a query using the @Query annotation."]]);
+        $response->assertJson(["data" => ["test" => "foo"]]);
+    }
+
+    public function testAuthentication()
+    {
+        $response = $this->json('POST', '/graphql', ['query' => '{ testLogged }']);
+        $this->assertSame(200, $response->getStatusCode(), $response->getContent());
+        $response->assertJson(["errors" => [["message" => "You need to be logged to access this field"]]]);
     }
 }

@@ -4,18 +4,27 @@
 namespace TheCodingMachine\GraphQLite\Laravel\Security;
 
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface;
 
 class AuthenticationService implements AuthenticationServiceInterface
 {
     /**
-     * @var Guard
+     * @var AuthFactory
      */
-    private $guard;
+    private $auth;
+    /**
+     * @var array|string[]
+     */
+    private $guards;
 
-    public function __construct(Guard $guard)
+    /**
+     * @param string[] $guards
+     */
+    public function __construct(AuthFactory $auth, array $guards)
     {
-        $this->guard = $guard;
+        $this->auth = $auth;
+        $this->guards = $guards;
     }
 
     /**
@@ -23,7 +32,12 @@ class AuthenticationService implements AuthenticationServiceInterface
      */
     public function isLogged(): bool
     {
-        return $this->guard->check();
+        foreach ($this->guards as $guard) {
+            if ($this->auth->guard($guard)->check()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -32,6 +46,12 @@ class AuthenticationService implements AuthenticationServiceInterface
      */
     public function getUser(): ?object
     {
-        return $this->guard->user();
+        foreach ($this->guards as $guard) {
+            $user = $this->auth->guard($guard)->user();
+            if ($user !== null) {
+                return $user;
+            }
+        }
+        return null;
     }
 }

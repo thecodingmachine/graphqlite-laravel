@@ -41,6 +41,11 @@
             "TheCodingMachine\\GraphQLite\\Laravel\\" : "src/"
         }
     },
+    "autoload-dev" : {
+        "psr-4" : {
+            "App\\" : "tests/Fixtures/App"
+        }
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "4.0.x-dev"

@@ -2,16 +2,20 @@
 
 namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
+use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use TheCodingMachine\GraphQLite\Laravel\Security\AuthenticationService;
+use TheCodingMachine\GraphQLite\Laravel\Security\AuthorizationService;
+use TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface;
+use function config;
 use function extension_loaded;
-use function foo\func;
 use GraphQL\Error\Debug;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Server\StandardServer;
-use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use function ini_get;
+use function is_array;
 use function is_iterable;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
@@ -73,8 +77,20 @@ class GraphQLiteServiceProvider extends ServiceProvider
             }
         });
 
+        $this->app->singleton(AuthenticationService::class, function(Application $app) {
+            $guard = config('graphqlite.guard', $this->app['config']['auth.defaults.guard']);
+            if (!is_array($guard)) {
+                $guard = [$guard];
+            }
+            return new AuthenticationService($app[AuthFactory::class], $guard);
+        });
+
+        $this->app->bind(AuthenticationServiceInterface::class, AuthenticationService::class);
+
         $this->app->singleton(SchemaFactory::class, function (Application $app) {
             $service = new SchemaFactory($app->make('graphqliteCache'), new SanePsr11ContainerAdapter($app));
+            $service->setAuthenticationService($app[AuthenticationService::class]);
+            $service->setAuthorizationService($app[AuthorizationService::class]);
 
             $controllers = config('graphqlite.controllers', 'App\\Http\\Controllers');
             if (!is_iterable($controllers)) {
