@@ -4,6 +4,7 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use TheCodingMachine\GraphQLite\Laravel\Middlewares\ValidateFieldMiddleware;
 use TheCodingMachine\GraphQLite\Laravel\Security\AuthenticationService;
 use TheCodingMachine\GraphQLite\Laravel\Security\AuthorizationService;
 use TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface;
@@ -91,6 +92,8 @@ class GraphQLiteServiceProvider extends ServiceProvider
             $service = new SchemaFactory($app->make('graphqliteCache'), new SanePsr11ContainerAdapter($app));
             $service->setAuthenticationService($app[AuthenticationService::class]);
             $service->setAuthorizationService($app[AuthorizationService::class]);
+            $service->addFieldMiddleware($app[ValidateFieldMiddleware::class]);
+
 
             $controllers = config('graphqlite.controllers', 'App\\Http\\Controllers');
             if (!is_iterable($controllers)) {
