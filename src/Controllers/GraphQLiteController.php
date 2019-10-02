@@ -10,6 +10,8 @@ use GraphQL\Executor\ExecutionResult;
 use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
+use function array_map;
 use function json_decode;
 use function json_last_error;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,6 +19,7 @@ use RuntimeException;
 use Symfony\Bridge\PsrHttpMessage\Factory\DiactorosFactory;
 use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use function max;
 
 
 class GraphQLiteController
@@ -61,24 +64,25 @@ class GraphQLiteController
         $uploadMiddleware = new UploadMiddleware();
         $psr7Request = $uploadMiddleware->processRequest($psr7Request);
 
-        $result = $this->handlePsr7Request($psr7Request);
-
-        $response = new JsonResponse($result);
-
-        return $response;
+        return $this->handlePsr7Request($psr7Request);
     }
 
-    private function handlePsr7Request(ServerRequestInterface $request): array
+    private function handlePsr7Request(ServerRequestInterface $request): JsonResponse
     {
         $result = $this->standardServer->executePsrRequest($request);
 
+        $httpCodeDecider = new HttpCodeDecider();
         if ($result instanceof ExecutionResult) {
-            return $result->toArray($this->debug);
+            return new JsonResponse($result->toArray($this->debug), $httpCodeDecider->decideHttpStatusCode($result));
         }
         if (is_array($result)) {
-            return array_map(function (ExecutionResult $executionResult) {
-                return $executionResult->toArray($this->debug);
+            $finalResult =  array_map(function (ExecutionResult $executionResult) {
+                return new JsonResponse($executionResult->toArray($this->debug));
             }, $result);
+            // Let's return the highest result.
+            $statuses = array_map([$httpCodeDecider, 'decideHttpStatusCode'], $result);
+            $status = max($statuses);
+            return new JsonResponse($finalResult, $status);
         }
         if ($result instanceof Promise) {
             throw new RuntimeException('Only SyncPromiseAdapter is supported');

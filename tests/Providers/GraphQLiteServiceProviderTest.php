@@ -30,7 +30,7 @@ class GraphQLiteServiceProviderTest extends TestCase
     public function testAuthentication()
     {
         $response = $this->json('POST', '/graphql', ['query' => '{ testLogged }']);
-        $this->assertSame(200, $response->getStatusCode(), $response->getContent());
+        $this->assertSame(401, $response->getStatusCode(), $response->getContent());
         $response->assertJson(["errors" => [["message" => "You need to be logged to access this field"]]]);
     }
 }
