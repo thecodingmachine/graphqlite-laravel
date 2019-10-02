@@ -18,6 +18,7 @@
 
     <php>
         <env name="APP_KEY" value="9E6B382F19C53C5327840752500B0260"/>
+        <env name="APP_DEBUG" value="true"/>
     </php>
 
     <filter>
