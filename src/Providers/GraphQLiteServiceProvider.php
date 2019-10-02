@@ -37,7 +37,7 @@ class GraphQLiteServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../../config/graphqlite.php' => config_path('graphqlite.php'),
-        ]);
+        ], 'config');
 
         $this->loadRoutesFrom(__DIR__.'/../routes/routes.php');
     }
