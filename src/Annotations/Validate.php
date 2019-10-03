@@ -19,7 +19,7 @@ use function ltrim;
  *   @Attribute("rule", type = "string")
  * })
  */
-class Validate implements ParameterAnnotationInterface, MiddlewareAnnotationInterface
+class Validate implements ParameterAnnotationInterface
 {
     /** @var string */
     private $for;

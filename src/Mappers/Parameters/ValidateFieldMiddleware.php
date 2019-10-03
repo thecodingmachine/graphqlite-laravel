@@ -2,18 +2,25 @@
 
 declare(strict_types=1);
 
-namespace TheCodingMachine\GraphQLite\Laravel\Middlewares;
+namespace TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters;
 
 use Closure;
 use GraphQL\Type\Definition\FieldDefinition;
 use GraphQL\Type\Definition\NonNull;
 use GraphQL\Type\Definition\OutputType;
+use phpDocumentor\Reflection\DocBlock;
+use phpDocumentor\Reflection\Type;
 use Psr\Log\LoggerInterface;
 use ReflectionFunction;
+use ReflectionParameter;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use TheCodingMachine\GraphQLite\Annotations\FailWith;
+use TheCodingMachine\GraphQLite\Annotations\ParameterAnnotations;
 use TheCodingMachine\GraphQLite\Annotations\Security;
 use TheCodingMachine\GraphQLite\Laravel\Annotations\Validate;
+use TheCodingMachine\GraphQLite\Mappers\Parameters\ParameterHandlerInterface;
+use TheCodingMachine\GraphQLite\Mappers\Parameters\ParameterMiddlewareInterface;
+use TheCodingMachine\GraphQLite\Parameters\InputTypeParameterInterface;
 use TheCodingMachine\GraphQLite\Parameters\ParameterInterface;
 use TheCodingMachine\GraphQLite\QueryFieldDescriptor;
 use TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface;
@@ -26,7 +33,9 @@ use Throwable;
 use Webmozart\Assert\Assert;
 use function array_combine;
 use function array_keys;
+use function array_map;
 use function array_merge;
+use function implode;
 use function is_array;
 use function is_object;
 use Illuminate\Validation\Factory as ValidationFactory;
@@ -34,7 +43,7 @@ use Illuminate\Validation\Factory as ValidationFactory;
 /**
  * A field middleware that reads "Security" Symfony annotations.
  */
-class ValidateFieldMiddleware implements FieldMiddlewareInterface
+class ValidateFieldMiddleware implements ParameterMiddlewareInterface
 {
     /**
      * @var ValidationFactory
@@ -46,43 +55,24 @@ class ValidateFieldMiddleware implements FieldMiddlewareInterface
         $this->validationFactory = $validationFactory;
     }
 
-    public function process(QueryFieldDescriptor $queryFieldDescriptor, FieldHandlerInterface $fieldHandler): ?FieldDefinition
+    public function mapParameter(ReflectionParameter $refParameter, DocBlock $docBlock, ?Type $paramTagType, ParameterAnnotations $parameterAnnotations, ParameterHandlerInterface $next): ParameterInterface
     {
-        $annotations = $queryFieldDescriptor->getMiddlewareAnnotations();
         /** @var Validate[] $validateAnnotations */
-        $validateAnnotations = $annotations->getAnnotationsByType(Validate::class);
+        $validateAnnotations = $parameterAnnotations->getAnnotationsByType(Validate::class);
+
+        $parameter = $next->mapParameter($refParameter, $docBlock, $paramTagType, $parameterAnnotations);
 
         if (empty($validateAnnotations)) {
-            return $fieldHandler->handle($queryFieldDescriptor);
+            return $parameter;
         }
 
-        $callable = $queryFieldDescriptor->getCallable();
-        Assert::notNull($callable);
-
-        $parameters = $queryFieldDescriptor->getParameters();
-
-        $rules = [];
-        foreach ($validateAnnotations as $validateAnnotation) {
-            $rules[$validateAnnotation->getTarget()] = $validateAnnotation->getRule();
+        if (!$parameter instanceof InputTypeParameterInterface) {
+            throw InvalidValidateAnnotationException::canOnlyValidateInputType($refParameter);
         }
 
-        $queryFieldDescriptor->setCallable(function (...$args) use ($rules, $callable, $parameters) {
-            $argsName = array_keys($parameters);
-            $argsByName = array_combine($argsName, $args);
+        // Let's wrap the ParameterInterface into a ParameterValidator.
+        $rules = array_map(static function(Validate $validateAnnotation): string { return $validateAnnotation->getRule(); }, $validateAnnotations);
 
-            $validator = $this->validationFactory->make($argsByName, $rules);
-
-            if ($validator->fails()) {
-                $errorMessages = [];
-                foreach ($validator->errors()->toArray() as $field => $errors) {
-                    $errorMessages[] = implode(', ', $errors);
-                }
-                throw new ValidateException(implode(', ', $errorMessages));
-            }
-
-            return $callable(...$args);
-        });
-
-        return $fieldHandler->handle($queryFieldDescriptor);
+        return new ParameterValidator($parameter, $refParameter->getName(), implode('|', $rules), $this->validationFactory);
     }
 }

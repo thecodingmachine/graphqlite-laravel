@@ -15,9 +15,13 @@
             "homepage" : "http://mouf-php.com"
         }
     ],
+    "repositories": [{
+        "type": "vcs",
+        "url": "git@github.com:moufmouf/graphqlite.git"
+    }],
     "require" : {
         "php" : ">=7.2",
-        "thecodingmachine/graphqlite" : "~4.0.0",
+        "thecodingmachine/graphqlite" : "dev-parameter_middlewares",
         "illuminate/console": "^5.7|^6.0",
         "illuminate/container": "^5.7|^6.0",
         "illuminate/support": "^5.7|^6.0",

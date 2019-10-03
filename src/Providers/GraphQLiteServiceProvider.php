@@ -4,7 +4,7 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
-use TheCodingMachine\GraphQLite\Laravel\Middlewares\ValidateFieldMiddleware;
+use TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters\ValidateFieldMiddleware;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapper;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapperFactory;
 use TheCodingMachine\GraphQLite\Laravel\Security\AuthenticationService;
@@ -94,7 +94,7 @@ class GraphQLiteServiceProvider extends ServiceProvider
             $service = new SchemaFactory($app->make('graphqliteCache'), new SanePsr11ContainerAdapter($app));
             $service->setAuthenticationService($app[AuthenticationService::class]);
             $service->setAuthorizationService($app[AuthorizationService::class]);
-            $service->addFieldMiddleware($app[ValidateFieldMiddleware::class]);
+            $service->addParameterMapper($app[ValidateFieldMiddleware::class]);
 
             $service->addTypeMapperFactory($app[PaginatorTypeMapperFactory::class]);
 

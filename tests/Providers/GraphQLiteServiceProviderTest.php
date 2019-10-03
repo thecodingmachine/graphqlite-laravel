@@ -78,4 +78,11 @@ GQL
     ]
 ]);
     }
+
+    public function testValidator()
+    {
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidator(foo:"a", bar:0) }']);
+        $this->assertSame(401, $response->getStatusCode(), $response->getContent());
+        $response->assertJson(["errors" => [["message" => "You need to be logged to access this field"]]]);
+    }
 }
