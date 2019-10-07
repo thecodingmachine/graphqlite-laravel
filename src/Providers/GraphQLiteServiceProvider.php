@@ -4,6 +4,7 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters\ValidateFieldMiddleware;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapper;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapperFactory;
@@ -69,6 +70,8 @@ class GraphQLiteServiceProvider extends ServiceProvider
         $this->app->singleton(ServerConfig::class, function (Application $app) {
             $serverConfig = new ServerConfig();
             $serverConfig->setSchema($app[Schema::class]);
+            $serverConfig->setErrorFormatter([WebonyxErrorHandler::class, 'errorFormatter']);
+            $serverConfig->setErrorsHandler([WebonyxErrorHandler::class, 'errorHandler']);
             return $serverConfig;
         });
 

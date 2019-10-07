@@ -82,7 +82,25 @@ GQL
     public function testValidator()
     {
         $response = $this->json('POST', '/graphql', ['query' => '{ testValidator(foo:"a", bar:0) }']);
-        $this->assertSame(401, $response->getStatusCode(), $response->getContent());
-        $response->assertJson(["errors" => [["message" => "You need to be logged to access this field"]]]);
+        $response->assertJson([
+            'errors' => [
+                [
+                    'message' => 'The foo must be a valid email address.',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ],
+                [
+                    'message' => 'The bar must be greater than 42.',
+                    'extensions' => [
+                        'argument' => 'bar',
+                        'category' => 'Validate'
+                    ],
+                ]
+            ]
+        ]);
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
     }
 }

@@ -7,6 +7,7 @@ namespace TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters;
 use GraphQL\Type\Definition\InputType;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Validation\Factory as ValidationFactory;
+use TheCodingMachine\GraphQLite\Exceptions\GraphQLAggregateException;
 use TheCodingMachine\GraphQLite\Laravel\Exceptions\ValidateException;
 use TheCodingMachine\GraphQLite\Parameters\InputTypeParameterInterface;
 use TheCodingMachine\GraphQLite\Parameters\ParameterInterface;
@@ -57,9 +58,11 @@ class ParameterValidator implements InputTypeParameterInterface
         if ($validator->fails()) {
             $errorMessages = [];
             foreach ($validator->errors()->toArray() as $field => $errors) {
-                $errorMessages[] = implode(', ', $errors);
+                foreach ($errors as $error) {
+                    $errorMessages[] = ValidateException::create($error, $field);
+                }
             }
-            throw new ValidateException(implode(', ', $errorMessages));
+            GraphQLAggregateException::throwExceptions($errorMessages);
         }
 
         return $value;
