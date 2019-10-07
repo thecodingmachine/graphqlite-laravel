@@ -94,7 +94,7 @@ class GraphQLiteServiceProvider extends ServiceProvider
             $service = new SchemaFactory($app->make('graphqliteCache'), new SanePsr11ContainerAdapter($app));
             $service->setAuthenticationService($app[AuthenticationService::class]);
             $service->setAuthorizationService($app[AuthorizationService::class]);
-            $service->addParameterMapper($app[ValidateFieldMiddleware::class]);
+            $service->addParameterMiddleware($app[ValidateFieldMiddleware::class]);
 
             $service->addTypeMapperFactory($app[PaginatorTypeMapperFactory::class]);
 
