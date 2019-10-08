@@ -46,4 +46,13 @@ class TestController
     {
         return 'success';
     }
+
+    /**
+     * @Query()
+     * @Validate(for="foo", rule="starts_with:abc|ends_with:xyz")
+     */
+    public function testValidatorMultiple(string $foo): string
+    {
+        return 'success';
+    }
 }

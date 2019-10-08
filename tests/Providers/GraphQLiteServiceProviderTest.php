@@ -103,4 +103,62 @@ GQL
 
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
     }
+
+    public function testValidatorMultiple()
+    {
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"xyzabc") }']);
+        $response->assertJson([
+            'errors' => [
+                [
+                    'message' => 'The foo must start with one of the following: abc',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ],
+                [
+                    'message' => 'The foo must end with one of the following: xyz',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ]
+            ]
+        ]);
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"abcdef") }']);
+        $response->assertJson([
+            'errors' => [
+                [
+                    'message' => 'The foo must end with one of the following: xyz',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ]
+            ]
+        ]);
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"uvwxyz") }']);
+        $response->assertJson([
+            'errors' => [
+                [
+                    'message' => 'The foo must start with one of the following: abc',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ]
+            ]
+        ]);
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"abcxyz") }']);
+        $this->assertSame(200, $response->getStatusCode(), $response->getContent());
+    }
 }
