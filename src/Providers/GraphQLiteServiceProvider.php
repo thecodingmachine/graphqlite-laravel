@@ -4,6 +4,8 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler;
+use TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters\ValidateFieldMiddleware;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapper;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapperFactory;
 use TheCodingMachine\GraphQLite\Laravel\Security\AuthenticationService;
@@ -68,6 +70,8 @@ class GraphQLiteServiceProvider extends ServiceProvider
         $this->app->singleton(ServerConfig::class, function (Application $app) {
             $serverConfig = new ServerConfig();
             $serverConfig->setSchema($app[Schema::class]);
+            $serverConfig->setErrorFormatter([WebonyxErrorHandler::class, 'errorFormatter']);
+            $serverConfig->setErrorsHandler([WebonyxErrorHandler::class, 'errorHandler']);
             return $serverConfig;
         });
 
@@ -93,6 +97,8 @@ class GraphQLiteServiceProvider extends ServiceProvider
             $service = new SchemaFactory($app->make('graphqliteCache'), new SanePsr11ContainerAdapter($app));
             $service->setAuthenticationService($app[AuthenticationService::class]);
             $service->setAuthorizationService($app[AuthorizationService::class]);
+            $service->addParameterMiddleware($app[ValidateFieldMiddleware::class]);
+
             $service->addTypeMapperFactory($app[PaginatorTypeMapperFactory::class]);
 
             $controllers = config('graphqlite.controllers', 'App\\Http\\Controllers');

@@ -78,4 +78,87 @@ GQL
     ]
 ]);
     }
+
+    public function testValidator()
+    {
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidator(foo:"a", bar:0) }']);
+        $response->assertJson([
+            'errors' => [
+                [
+                    'message' => 'The foo must be a valid email address.',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ],
+                [
+                    'message' => 'The bar must be greater than 42.',
+                    'extensions' => [
+                        'argument' => 'bar',
+                        'category' => 'Validate'
+                    ],
+                ]
+            ]
+        ]);
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+    }
+
+    public function testValidatorMultiple()
+    {
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"191.168.1") }']);
+        $response->assertJson([
+            'errors' => [
+                [
+                    'message' => 'The foo must start with one of the following: 192',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ],
+                [
+                    'message' => 'The foo must be a valid IPv4 address.',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ]
+            ]
+        ]);
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"192.168.1") }']);
+        $response->assertJson([
+            'errors' => [
+                [
+                    'message' => 'The foo must be a valid IPv4 address.',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ]
+            ]
+        ]);
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"191.168.1.1") }']);
+        $response->assertJson([
+            'errors' => [
+                [
+                    'message' => 'The foo must start with one of the following: 192',
+                    'extensions' => [
+                        'argument' => 'foo',
+                        'category' => 'Validate'
+                    ],
+                ]
+            ]
+        ]);
+
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"192.168.1.1") }']);
+        $this->assertSame(200, $response->getStatusCode(), $response->getContent());
+    }
 }
