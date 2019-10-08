@@ -49,7 +49,7 @@ class TestController
 
     /**
      * @Query()
-     * @Validate(for="foo", rule="starts_with:abc|ends_with:xyz")
+     * @Validate(for="foo", rule="starts_with:192|ipv4")
      */
     public function testValidatorMultiple(string $foo): string
     {
