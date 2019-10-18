@@ -41,7 +41,7 @@ use function is_object;
 use Illuminate\Validation\Factory as ValidationFactory;
 
 /**
- * A field middleware that reads "Security" Symfony annotations.
+ * A parameter middleware that reads "Validate" annotations.
  */
 class ValidateFieldMiddleware implements ParameterMiddlewareInterface
 {

@@ -4,6 +4,7 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use TheCodingMachine\GraphQLite\Context\Context;
 use TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters\ValidateFieldMiddleware;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapper;
@@ -63,19 +64,20 @@ class GraphQLiteServiceProvider extends ServiceProvider
             return new GraphQLiteController($app[StandardServer::class], $app[HttpMessageFactoryInterface::class], $debug);
         });
 
-        $this->app->singleton(StandardServer::class, function (Application $app) {
+        $this->app->singleton(StandardServer::class, static function (Application $app) {
             return new StandardServer($app[ServerConfig::class]);
         });
 
-        $this->app->singleton(ServerConfig::class, function (Application $app) {
+        $this->app->singleton(ServerConfig::class, static function (Application $app) {
             $serverConfig = new ServerConfig();
             $serverConfig->setSchema($app[Schema::class]);
             $serverConfig->setErrorFormatter([WebonyxErrorHandler::class, 'errorFormatter']);
             $serverConfig->setErrorsHandler([WebonyxErrorHandler::class, 'errorHandler']);
+            $serverConfig->setContext(new Context());
             return $serverConfig;
         });
 
-        $this->app->singleton('graphqliteCache', function () {
+        $this->app->singleton('graphqliteCache', static function () {
             if (extension_loaded('apcu') && ini_get('apc.enabled')) {
                 return new \Symfony\Component\Cache\Simple\ApcuCache();
             } else {
