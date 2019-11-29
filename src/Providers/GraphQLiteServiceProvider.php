@@ -4,6 +4,9 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Symfony\Component\Cache\Adapter\ApcuAdapter;
+use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
+use Symfony\Component\Cache\Psr16Cache;
 use TheCodingMachine\GraphQLite\Context\Context;
 use TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters\ValidateFieldMiddleware;
@@ -79,9 +82,9 @@ class GraphQLiteServiceProvider extends ServiceProvider
 
         $this->app->singleton('graphqliteCache', static function () {
             if (extension_loaded('apcu') && ini_get('apc.enabled')) {
-                return new \Symfony\Component\Cache\Simple\ApcuCache();
+                return new Psr16Cache(new ApcuAdapter());
             } else {
-                return new \Symfony\Component\Cache\Simple\PhpFilesCache();
+                return new Psr16Cache(new PhpFilesAdapter());
             }
         });
 
