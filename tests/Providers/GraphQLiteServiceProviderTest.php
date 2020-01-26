@@ -6,6 +6,7 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 use Orchestra\Testbench\TestCase;
 use TheCodingMachine\GraphQLite\Schema;
 use TheCodingMachine\TDBM\TDBMService;
+use function json_decode;
 
 class GraphQLiteServiceProviderTest extends TestCase
 {
@@ -110,7 +111,6 @@ GQL
         $response->assertJson([
             'errors' => [
                 [
-                    'message' => 'The foo must start with one of the following: 192',
                     'extensions' => [
                         'argument' => 'foo',
                         'category' => 'Validate'
@@ -125,6 +125,8 @@ GQL
                 ]
             ]
         ]);
+
+        $this->assertContains('The foo must start with one of the following: 192', $response->json('errors')[0]['message']);
 
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
         $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"192.168.1") }']);
@@ -147,7 +149,6 @@ GQL
         $response->assertJson([
             'errors' => [
                 [
-                    'message' => 'The foo must start with one of the following: 192',
                     'extensions' => [
                         'argument' => 'foo',
                         'category' => 'Validate'
@@ -155,6 +156,7 @@ GQL
                 ]
             ]
         ]);
+        $this->assertContains('The foo must start with one of the following: 192', $response->json('errors')[0]['message']);
 
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
 
