@@ -4,11 +4,13 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Illuminate\Contracts\Events\Dispatcher;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use TheCodingMachine\GraphQLite\Context\Context;
 use TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler;
+use TheCodingMachine\GraphQLite\Laravel\Listeners\CachePurger;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters\ValidateFieldMiddleware;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapper;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapperFactory;
@@ -41,13 +43,14 @@ class GraphQLiteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(Dispatcher $events)
     {
         $this->publishes([
             __DIR__.'/../../config/graphqlite.php' => config_path('graphqlite.php'),
         ], 'config');
 
         $this->loadRoutesFrom(__DIR__.'/../routes/routes.php');
+        $events->listen('cache:clearing', CachePurger::class);
     }
 
     /**
@@ -86,6 +89,10 @@ class GraphQLiteServiceProvider extends ServiceProvider
             } else {
                 return new Psr16Cache(new PhpFilesAdapter());
             }
+        });
+
+        $this->app->singleton(CachePurger::class, static function (Application $app) {
+            return new CachePurger($app['graphqliteCache']);
         });
 
         $this->app->singleton(AuthenticationService::class, function(Application $app) {
