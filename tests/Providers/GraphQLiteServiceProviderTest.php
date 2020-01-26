@@ -4,6 +4,7 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 
 use Orchestra\Testbench\TestCase;
+use TheCodingMachine\GraphQLite\Laravel\Listeners\CachePurger;
 use TheCodingMachine\GraphQLite\Schema;
 use TheCodingMachine\TDBM\TDBMService;
 use function json_decode;
@@ -162,5 +163,11 @@ GQL
 
         $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"192.168.1.1") }']);
         $this->assertSame(200, $response->getStatusCode(), $response->getContent());
+    }
+
+    public function testCachePurger(): void
+    {
+        $cachePurger = $this->app->make(CachePurger::class);
+        $cachePurger->handle();
     }
 }
