@@ -23,7 +23,7 @@
         "illuminate/support": "^5.7|^6.0",
         "illuminate/cache": "^5.7|^6.0",
         "symfony/psr-http-message-bridge": "^1",
-        "zendframework/zend-diactoros": "^1.8.6",
+        "zendframework/zend-diactoros": "^1.8.6 || ^2.0.0",
         "symfony/cache": "^4.3 || ^5"
     },
     "require-dev": {
