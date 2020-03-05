@@ -25,8 +25,7 @@
         "illuminate/cache": "^5.7|^6.0",
         "symfony/psr-http-message-bridge": "^1",
         "laminas/laminas-diactoros": "^2.2.2",
-        "symfony/cache": "^4.3 || ^5",
-        "laminas/laminas-dependency-plugin": "^1.0"
+        "symfony/cache": "^4.3 || ^5"
     },
     "require-dev": {
         "orchestra/testbench": "^3.7.7 || ^4",
