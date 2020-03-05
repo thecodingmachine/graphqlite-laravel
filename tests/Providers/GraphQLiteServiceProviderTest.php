@@ -169,5 +169,6 @@ GQL
     {
         $cachePurger = $this->app->make(CachePurger::class);
         $cachePurger->handle();
+        $this->assertTrue(true);
     }
 }
