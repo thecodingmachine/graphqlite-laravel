@@ -1,44 +1,46 @@
 {
-    "name" : "thecodingmachine/graphqlite-laravel",
-    "description" : "A Laravel service provider package to help you get started with GraphQLite in Laravel.",
-    "keywords" : [
+    "name": "thecodingmachine/graphqlite-laravel",
+    "description": "A Laravel service provider package to help you get started with GraphQLite in Laravel.",
+    "keywords": [
         "GraphQL",
         "GraphQLite",
         "Laravel"
     ],
-    "homepage" : "https://github.com/thecodingmachine/graphqlite",
-    "type" : "library",
-    "license" : "MIT",
-    "authors" : [{
-            "name" : "David Négrier",
-            "email" : "d.negrier@thecodingmachine.com",
-            "homepage" : "http://mouf-php.com"
+    "homepage": "https://github.com/thecodingmachine/graphqlite",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David N\u00e9grier",
+            "email": "d.negrier@thecodingmachine.com",
+            "homepage": "http://mouf-php.com"
         }
     ],
-    "require" : {
-        "php" : ">=7.2",
-        "thecodingmachine/graphqlite" : "^4",
+    "require": {
+        "php": ">=7.2",
+        "thecodingmachine/graphqlite": "^4",
         "illuminate/console": "^5.7|^6.0",
         "illuminate/container": "^5.7|^6.0",
         "illuminate/support": "^5.7|^6.0",
         "illuminate/cache": "^5.7|^6.0",
         "symfony/psr-http-message-bridge": "^1",
-        "zendframework/zend-diactoros": "^1.8.6",
-        "symfony/cache": "^4.3 || ^5"
+        "laminas/laminas-diactoros": "^2.2.2",
+        "symfony/cache": "^4.3 || ^5",
+        "laminas/laminas-dependency-plugin": "^1.0"
     },
     "require-dev": {
         "orchestra/testbench": "^3.7.7 || ^4",
         "phpunit/phpunit": "^7.5.4 || ^8.3",
         "ext-sqlite3": "*"
     },
-    "autoload" : {
-        "psr-4" : {
-            "TheCodingMachine\\GraphQLite\\Laravel\\" : "src/"
+    "autoload": {
+        "psr-4": {
+            "TheCodingMachine\\GraphQLite\\Laravel\\": "src/"
         }
     },
-    "autoload-dev" : {
-        "psr-4" : {
-            "App\\" : "tests/Fixtures/App"
+    "autoload-dev": {
+        "psr-4": {
+            "App\\": "tests/Fixtures/App"
         }
     },
     "extra": {

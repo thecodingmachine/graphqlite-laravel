@@ -5,6 +5,15 @@ namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Events\Dispatcher;
+use Laminas\Diactoros\ResponseFactory;
+use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\StreamFactory;
+use Laminas\Diactoros\UploadedFileFactory;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use Symfony\Component\Cache\Adapter\ApcuAdapter;
 use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
@@ -62,7 +71,20 @@ class GraphQLiteServiceProvider extends ServiceProvider
     {
         $this->app->bind(WebonyxSchema::class, Schema::class);
 
-        $this->app->bind(HttpMessageFactoryInterface::class, DiactorosFactory::class);
+        if (!$this->app->has(ServerRequestFactoryInterface::class)) {
+            $this->app->bind(ServerRequestFactoryInterface::class, ServerRequestFactory::class);
+        }
+        if (!$this->app->has(StreamFactoryInterface::class)) {
+            $this->app->bind(StreamFactoryInterface::class, StreamFactory::class);
+        }
+        if (!$this->app->has(UploadedFileFactoryInterface::class)) {
+            $this->app->bind(UploadedFileFactoryInterface::class, UploadedFileFactory::class);
+        }
+        if (!$this->app->has(ResponseFactoryInterface::class)) {
+            $this->app->bind(ResponseFactoryInterface::class, ResponseFactory::class);
+        }
+
+        $this->app->bind(HttpMessageFactoryInterface::class, PsrHttpFactory::class);
 
         $this->app->singleton(GraphQLiteController::class, function (Application $app) {
             $debug = config('graphqlite.debug', Debug::RETHROW_UNSAFE_EXCEPTIONS);
