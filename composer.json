@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "php": ">=7.3",
+        "php": ">=7.2",
         "thecodingmachine/graphqlite": "^4",
         "illuminate/console": "^5.7|^6.0|^7|^8",
         "illuminate/container": "^5.7|^6.0|^7|^8",
