@@ -39,7 +39,7 @@ class GraphQLiteServiceProviderTest extends TestCase
     public function testPagination()
     {
         $response = $this->json('POST', '/graphql', ['query' => <<<GQL
-{ 
+{
     testPaginator {
         items
         firstItem
@@ -127,7 +127,7 @@ GQL
             ]
         ]);
 
-        $this->assertContains('The foo must start with one of the following: 192', $response->json('errors')[0]['message']);
+        $this->assertStringContainsString('The foo must start with one of the following: 192', $response->json('errors')[0]['message']);
 
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
         $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"192.168.1") }']);
@@ -157,7 +157,7 @@ GQL
                 ]
             ]
         ]);
-        $this->assertContains('The foo must start with one of the following: 192', $response->json('errors')[0]['message']);
+        $this->assertStringContainsString('The foo must start with one of the following: 192', $response->json('errors')[0]['message']);
 
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
 
