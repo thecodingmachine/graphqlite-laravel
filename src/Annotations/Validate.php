@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace TheCodingMachine\GraphQLite\Laravel\Annotations;
 
+use Attribute;
 use BadMethodCallException;
 use TheCodingMachine\GraphQLite\Annotations\MiddlewareAnnotationInterface;
 use TheCodingMachine\GraphQLite\Annotations\ParameterAnnotationInterface;
+use function is_string;
 use function ltrim;
 
 /**
@@ -19,6 +21,7 @@ use function ltrim;
  *   @Attribute("rule", type = "string")
  * })
  */
+#[Attribute(Attribute::TARGET_PARAMETER)]
 class Validate implements ParameterAnnotationInterface
 {
     /** @var string */
@@ -29,20 +32,27 @@ class Validate implements ParameterAnnotationInterface
     /**
      * @param array<string, mixed> $values
      */
-    public function __construct(array $values)
+    public function __construct($rule = [])
     {
-        if (! isset($values['for'])) {
-            throw new BadMethodCallException('The @Validate annotation must be passed a target. For instance: "@Validate(for="$email", rule="email")"');
+        $values = $rule;
+        if (is_string($values)) {
+            $this->rule = $values;
+        } else {
+            $this->rule = $values['rule'] ?? null;
+            if (isset($values['for'])) {
+                $this->for = ltrim($values['for'], '$');
+            }
         }
         if (! isset($values['rule'])) {
-            throw new BadMethodCallException('The @Validate annotation must be passed a rule. For instance: "@Validate(for="$email", rule="email")"');
+            throw new BadMethodCallException('The @Validate annotation must be passed a rule. For instance: "#Validate("email")" in PHP 8+ or "@Validate(for="$email", rule="email")" in PHP 7+');
         }
-        $this->for = ltrim($values['for'], '$');
-        $this->rule = $values['rule'] ?? null;
     }
 
     public function getTarget(): string
     {
+        if ($this->for === null) {
+            throw new BadMethodCallException('The @Validate annotation must be passed a target. For instance: "@Validate(for="$email", rule="email")"');
+        }
         return $this->for;
     }
 
