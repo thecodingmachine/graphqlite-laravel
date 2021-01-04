@@ -60,9 +60,11 @@ class GraphQLiteController
             $psr7Request = $psr7Request->withParsedBody($parsedBody);
         }
 
-        // Let's parse the request and adapt it for file uploads.
-        $uploadMiddleware = new UploadMiddleware();
-        $psr7Request = $uploadMiddleware->processRequest($psr7Request);
+        if (class_exists('\GraphQL\Upload\UploadMiddleware')) {
+            // Let's parse the request and adapt it for file uploads.
+            $uploadMiddleware = new UploadMiddleware();
+            $psr7Request = $uploadMiddleware->processRequest($psr7Request);
+        }
 
         return $this->handlePsr7Request($psr7Request);
     }
