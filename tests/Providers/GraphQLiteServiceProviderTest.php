@@ -3,11 +3,20 @@
 namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 
+use GraphQL\Error\Debug;
+use GraphQL\Executor\ExecutionResult;
+use GraphQL\Server\StandardServer;
 use Orchestra\Testbench\TestCase;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
 use TheCodingMachine\GraphQLite\Laravel\Listeners\CachePurger;
 use TheCodingMachine\GraphQLite\Schema;
 use TheCodingMachine\TDBM\TDBMService;
 use function json_decode;
+use Illuminate\Http\Request;
+use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
+use TheCodingMachine\GraphQLite\Laravel\Controllers\GraphQLiteController;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+
 
 class GraphQLiteServiceProviderTest extends TestCase
 {
@@ -170,5 +179,44 @@ GQL
         $cachePurger = $this->app->make(CachePurger::class);
         $cachePurger->handle();
         $this->assertTrue(true);
+    }
+
+    /**
+     * Asserts that the status code has been taken from the HttpCodeDeciderInterface.
+     */
+    public function testChangeTheCodeDecider()
+    {
+        $controller = $this->newGraphQLiteController();
+        $controller->setCodeDecider($this->newCodeDecider(418));
+
+        $response = $controller->index($this->newRequest());
+
+        $this->assertEquals(418, $response->getStatusCode());
+    }
+
+    private function newCodeDecider(int $statusCode): HttpCodeDeciderInterface
+    {
+        return new class implements HttpCodeDeciderInterface {
+            public function decideHttpStatusCode(ExecutionResult $result): int
+            {
+                return 418;
+            }
+        };
+    }
+
+    private function newGraphQLiteController(): GraphQLiteController
+    {
+        $server = $this->app->make(StandardServer::class);
+        $messageFactory = $this->app->make(PsrHttpFactory::class);
+        return new GraphQLiteController($server, $messageFactory, Debug::RETHROW_UNSAFE_EXCEPTIONS);
+    }
+
+    private function newRequest(): Request
+    {
+        $baseRequest = SymfonyRequest::create('https://localhost', 'GET', [
+            'query' => '{ testValidatorMultiple(foo:"192.168.1.1") }'
+        ]);
+
+        return Request::createFromBase($baseRequest);
     }
 }
