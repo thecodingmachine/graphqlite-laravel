@@ -5,7 +5,7 @@ namespace TheCodingMachine\GraphQLite\Laravel\Controllers;
 
 
 use Illuminate\Http\Request;
-use GraphQL\Error\Debug;
+use GraphQL\Error\DebugFlag;
 use GraphQL\Executor\ExecutionResult;
 use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\StandardServer;
@@ -33,7 +33,7 @@ class GraphQLiteController
     /** @var bool|int */
     private $debug;
 
-    public function __construct(StandardServer $standardServer, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = Debug::RETHROW_UNSAFE_EXCEPTIONS)
+    public function __construct(StandardServer $standardServer, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = DebugFlag::RETHROW_UNSAFE_EXCEPTIONS)
     {
         $this->standardServer = $standardServer;
         $this->httpMessageFactory = $httpMessageFactory ?: new DiactorosFactory();
