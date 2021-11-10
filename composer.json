@@ -20,8 +20,8 @@
         "test": "phpunit"
     },
     "require": {
-        "php": ">=7.2|8.0",
-        "thecodingmachine/graphqlite": "^5",
+        "php": ">=7.2",
+        "thecodingmachine/graphqlite": "^5.0",
         "illuminate/console": "^5.7|^6.0|^7|^8",
         "illuminate/container": "^5.7|^6.0|^7|^8",
         "illuminate/support": "^5.7|^6.0|^7|^8",
