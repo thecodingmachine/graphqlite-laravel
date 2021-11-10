@@ -28,7 +28,7 @@ use TheCodingMachine\GraphQLite\Laravel\Security\AuthorizationService;
 use TheCodingMachine\GraphQLite\Security\AuthenticationServiceInterface;
 use function config;
 use function extension_loaded;
-use GraphQL\Error\Debug;
+use GraphQL\Error\DebugFlag;
 use GraphQL\Server\ServerConfig;
 use GraphQL\Server\StandardServer;
 use Illuminate\Contracts\Foundation\Application;
@@ -87,7 +87,7 @@ class GraphQLiteServiceProvider extends ServiceProvider
         $this->app->bind(HttpMessageFactoryInterface::class, PsrHttpFactory::class);
 
         $this->app->singleton(GraphQLiteController::class, function (Application $app) {
-            $debug = config('graphqlite.debug', Debug::RETHROW_UNSAFE_EXCEPTIONS);
+            $debug = config('graphqlite.debug', DebugFlag::RETHROW_UNSAFE_EXCEPTIONS);
 
             return new GraphQLiteController($app[StandardServer::class], $app[HttpMessageFactoryInterface::class], $debug);
         });

@@ -16,9 +16,12 @@
             "homepage": "http://mouf-php.com"
         }
     ],
+    "scripts": {
+        "test": "phpunit"
+    },
     "require": {
         "php": ">=7.2",
-        "thecodingmachine/graphqlite": "^4",
+        "thecodingmachine/graphqlite": "^5.0",
         "illuminate/console": "^5.7|^6.0|^7|^8",
         "illuminate/container": "^5.7|^6.0|^7|^8",
         "illuminate/support": "^5.7|^6.0|^7|^8",
@@ -44,7 +47,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.1.x-dev"
+            "dev-master": "5.0.x-dev"
         },
         "laravel": {
             "providers": [
