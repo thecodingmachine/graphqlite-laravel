@@ -11,6 +11,7 @@ use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
 use function array_map;
 use function json_decode;
 use function json_last_error;
@@ -32,12 +33,15 @@ class GraphQLiteController
     private $standardServer;
     /** @var bool|int */
     private $debug;
+    /** @var HttpCodeDeciderInterface */
+    private $codeDecider;
 
     public function __construct(StandardServer $standardServer, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = DebugFlag::RETHROW_UNSAFE_EXCEPTIONS)
     {
         $this->standardServer = $standardServer;
         $this->httpMessageFactory = $httpMessageFactory ?: new DiactorosFactory();
         $this->debug = $debug === null ? false : $debug;
+        $this->codeDecider = new HttpCodeDecider();
     }
 
     /**
@@ -73,7 +77,7 @@ class GraphQLiteController
     {
         $result = $this->standardServer->executePsrRequest($request);
 
-        $httpCodeDecider = new HttpCodeDecider();
+        $httpCodeDecider = $this->codeDecider;
         if ($result instanceof ExecutionResult) {
             return new JsonResponse($result->toArray($this->debug), $httpCodeDecider->decideHttpStatusCode($result));
         }
@@ -90,5 +94,10 @@ class GraphQLiteController
             throw new RuntimeException('Only SyncPromiseAdapter is supported');
         }
         throw new RuntimeException('Unexpected response from StandardServer::executePsrRequest'); // @codeCoverageIgnore
+    }
+
+    public function setCodeDecider(HttpCodeDeciderInterface $decider): void
+    {
+        $this->codeDecider = $decider;
     }
 }

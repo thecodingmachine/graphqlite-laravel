@@ -19,6 +19,7 @@ use Symfony\Component\Cache\Adapter\PhpFilesAdapter;
 use Symfony\Component\Cache\Psr16Cache;
 use TheCodingMachine\GraphQLite\Context\Context;
 use TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
 use TheCodingMachine\GraphQLite\Laravel\Listeners\CachePurger;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters\ValidateFieldMiddleware;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapper;
@@ -88,8 +89,14 @@ class GraphQLiteServiceProvider extends ServiceProvider
 
         $this->app->singleton(GraphQLiteController::class, function (Application $app) {
             $debug = config('graphqlite.debug', DebugFlag::RETHROW_UNSAFE_EXCEPTIONS);
+            $controller = new GraphQLiteController($app[StandardServer::class], $app[HttpMessageFactoryInterface::class], $debug);
+            $decider = config('graphqlite.decider');
 
-            return new GraphQLiteController($app[StandardServer::class], $app[HttpMessageFactoryInterface::class], $debug);
+            if (!empty($decider)) {
+                $controller->setCodeDecider($app[$decider]);
+            }
+
+            return $controller;
         });
 
         $this->app->singleton(StandardServer::class, static function (Application $app) {
