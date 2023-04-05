@@ -13,7 +13,7 @@
         {
             "name": "David N\u00e9grier",
             "email": "d.negrier@thecodingmachine.com",
-            "homepage": "http://mouf-php.com"
+            "homepage": "https://workadventu.re"
         }
     ],
     "scripts": {
@@ -48,7 +48,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "6.0.x-dev"
+            "dev-master": "6.1.x-dev"
         },
         "laravel": {
             "providers": [
