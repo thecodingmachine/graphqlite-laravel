@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TheCodingMachine\GraphQLite\Laravel\Mappers;
 
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\NamedType;
 use GraphQL\Type\Definition\NullableType;
 use GraphQL\Type\Definition\OutputType;
 use GraphQL\Type\Definition\Type;
@@ -196,11 +197,11 @@ class PaginatorTypeMapper implements TypeMapperInterface
      *
      * @param string $typeName The name of the GraphQL type
      *
-     * @return Type&((ResolvableMutableInputInterface&InputObjectType)|MutableObjectType|MutableInterfaceType)
+     * @return Type&NamedType&((ResolvableMutableInputInterface&InputObjectType)|MutableObjectType|MutableInterfaceType)
      *
      * @throws CannotMapTypeExceptionInterface
      */
-    public function mapNameToType(string $typeName): Type
+    public function mapNameToType(string $typeName): Type&NamedType
     {
         if (strpos($typeName, 'LengthAwarePaginatorResult_') === 0) {
             $subTypeName = substr($typeName, 27);

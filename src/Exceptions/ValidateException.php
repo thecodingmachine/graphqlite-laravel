@@ -19,20 +19,9 @@ class ValidateException extends \Exception implements GraphQLExceptionInterface
         return $exception;
     }
 
-    /**
-     * @return bool
-     */
-    public function isClientSafe()
+    public function isClientSafe(): bool
     {
         return true;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCategory()
-    {
-        return 'Validate';
     }
 
 

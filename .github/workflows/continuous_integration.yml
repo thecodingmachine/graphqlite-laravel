@@ -15,8 +15,13 @@ jobs:
 
     strategy:
       matrix:
-        install-args: ['', '--prefer-lowest']
-        php-version: ['7.4', '8.0']
+        include:
+          - install-args: "--prefer-lowest"
+            php-version: "8.1"
+          - install-args: ""
+            php-version: "8.1"
+          - install-args: ""
+            php-version: "8.2"
       fail-fast: false
 
     steps:
