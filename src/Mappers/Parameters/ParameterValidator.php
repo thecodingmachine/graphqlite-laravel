@@ -6,6 +6,7 @@ namespace TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters;
 
 use GraphQL\Type\Definition\InputType;
 use GraphQL\Type\Definition\ResolveInfo;
+use GraphQL\Type\Definition\Type;
 use Illuminate\Validation\Factory as ValidationFactory;
 use TheCodingMachine\GraphQLite\Exceptions\GraphQLAggregateException;
 use TheCodingMachine\GraphQLite\Laravel\Exceptions\ValidateException;
@@ -45,11 +46,8 @@ class ParameterValidator implements InputTypeParameterInterface
 
     /**
      * @param array<string, mixed> $args
-     * @param mixed $context
-     *
-     * @return mixed
      */
-    public function resolve(?object $source, array $args, $context, ResolveInfo $info)
+    public function resolve(?object $source, array $args, mixed $context, ResolveInfo $info): mixed
     {
         $value = $this->parameter->resolve($source, $args, $context, $info);
 
@@ -68,7 +66,7 @@ class ParameterValidator implements InputTypeParameterInterface
         return $value;
     }
 
-    public function getType(): InputType
+    public function getType(): InputType&Type
     {
         return $this->parameter->getType();
     }
@@ -78,10 +76,7 @@ class ParameterValidator implements InputTypeParameterInterface
         return $this->parameter->hasDefaultValue();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDefaultValue()
+    public function getDefaultValue(): mixed
     {
         return $this->parameter->getDefaultValue();
     }
