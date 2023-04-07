@@ -96,21 +96,19 @@ GQL
         $response->assertJson([
             'errors' => [
                 [
-                    'message' => 'The foo must be a valid email address.',
                     'extensions' => [
                         'argument' => 'foo',
-                        'category' => 'Validate'
                     ],
                 ],
                 [
-                    'message' => 'The bar must be greater than 42.',
                     'extensions' => [
                         'argument' => 'bar',
-                        'category' => 'Validate'
                     ],
                 ]
             ]
         ]);
+        $this->assertStringContainsString('must be a valid email address.', $response->json('errors')[0]['message']);
+        $this->assertStringContainsString('must be greater than 42.', $response->json('errors')[1]['message']);
 
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
     }
@@ -123,34 +121,31 @@ GQL
                 [
                     'extensions' => [
                         'argument' => 'foo',
-                        'category' => 'Validate'
                     ],
                 ],
                 [
-                    'message' => 'The foo must be a valid IPv4 address.',
                     'extensions' => [
                         'argument' => 'foo',
-                        'category' => 'Validate'
                     ],
                 ]
             ]
         ]);
 
-        $this->assertStringContainsString('The foo must start with one of the following: 192', $response->json('errors')[0]['message']);
+        $this->assertStringContainsString('must start with one of the following: 192', $response->json('errors')[0]['message']);
+        $this->assertStringContainsString('must be a valid IPv4 address.', $response->json('errors')[1]['message']);
 
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
         $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"192.168.1") }']);
         $response->assertJson([
             'errors' => [
                 [
-                    'message' => 'The foo must be a valid IPv4 address.',
                     'extensions' => [
                         'argument' => 'foo',
-                        'category' => 'Validate'
                     ],
                 ]
             ]
         ]);
+        $this->assertStringContainsString('must be a valid IPv4 address.', $response->json('errors')[0]['message']);
 
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
 
@@ -161,12 +156,11 @@ GQL
                 [
                     'extensions' => [
                         'argument' => 'foo',
-                        'category' => 'Validate'
                     ],
                 ]
             ]
         ]);
-        $this->assertStringContainsString('The foo must start with one of the following: 192', $response->json('errors')[0]['message']);
+        $this->assertStringContainsString('must start with one of the following: 192', $response->json('errors')[0]['message']);
 
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
 

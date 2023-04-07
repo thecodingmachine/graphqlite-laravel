@@ -53,7 +53,7 @@ class SanePsr11ContainerAdapter implements ContainerInterface
      *
      * @return bool
      */
-    public function has($id)
+    public function has($id): bool
     {
         if (class_exists($id) && !$this->container->has($id)) {
             try {
