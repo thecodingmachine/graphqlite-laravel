@@ -11,6 +11,7 @@ use GraphQL\Executor\Promise\Promise;
 use GraphQL\Server\StandardServer;
 use GraphQL\Upload\UploadMiddleware;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
 use function array_map;
 use function json_decode;
 use function json_last_error;
@@ -32,10 +33,13 @@ class GraphQLiteController
     private $standardServer;
     /** @var bool|int */
     private $debug;
+    /** @var HttpCodeDeciderInterface */
+    private $httpCodeDecider;
 
-    public function __construct(StandardServer $standardServer, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = DebugFlag::RETHROW_UNSAFE_EXCEPTIONS)
+    public function __construct(StandardServer $standardServer, HttpCodeDeciderInterface $httpCodeDecider, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = DebugFlag::RETHROW_UNSAFE_EXCEPTIONS)
     {
         $this->standardServer = $standardServer;
+        $this->httpCodeDecider = $httpCodeDecider;
         $this->httpMessageFactory = $httpMessageFactory ?: new DiactorosFactory();
         $this->debug = $debug === null ? false : $debug;
     }
@@ -73,7 +77,7 @@ class GraphQLiteController
     {
         $result = $this->standardServer->executePsrRequest($request);
 
-        $httpCodeDecider = new HttpCodeDecider();
+        $httpCodeDecider = $this->httpCodeDecider;
         if ($result instanceof ExecutionResult) {
             return new JsonResponse($result->toArray($this->debug), $httpCodeDecider->decideHttpStatusCode($result));
         }

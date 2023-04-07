@@ -1,6 +1,7 @@
 <?php
 
 use GraphQL\Error\DebugFlag;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
 
 return [
     /*
@@ -21,4 +22,7 @@ return [
     'debug' => DebugFlag::RETHROW_UNSAFE_EXCEPTIONS,
     'uri' => env('GRAPHQLITE_URI', '/graphql'),
     'middleware' =>  ['web'],
+
+    // Sets the status code in the HTTP request where operations have errors.
+    'http_code_decider' => HttpCodeDecider::class,
 ];
