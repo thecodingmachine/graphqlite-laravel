@@ -24,5 +24,5 @@ return [
     'middleware' =>  ['web'],
 
     // Sets the status code in the HTTP request where operations have errors.
-    'decider' => HttpCodeDecider::class,
+    'http_code_decider' => HttpCodeDecider::class,
 ];

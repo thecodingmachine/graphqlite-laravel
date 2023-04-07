@@ -3,7 +3,7 @@
 namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 
-use GraphQL\Error\Debug;
+use GraphQL\Error\DebugFlag;
 use GraphQL\Executor\ExecutionResult;
 use GraphQL\Server\StandardServer;
 use Orchestra\Testbench\TestCase;
@@ -180,8 +180,9 @@ GQL
      */
     public function testChangeTheCodeDecider()
     {
+        $this->app->instance(HttpCodeDeciderInterface::class, $this->newCodeDecider(418));
+
         $controller = $this->newGraphQLiteController();
-        $controller->setCodeDecider($this->newCodeDecider(418));
 
         $response = $controller->index($this->newRequest());
 
@@ -201,8 +202,9 @@ GQL
     private function newGraphQLiteController(): GraphQLiteController
     {
         $server = $this->app->make(StandardServer::class);
+        $httpCodeDecider = $this->app->make(HttpCodeDeciderInterface::class);
         $messageFactory = $this->app->make(PsrHttpFactory::class);
-        return new GraphQLiteController($server, $messageFactory, Debug::RETHROW_UNSAFE_EXCEPTIONS);
+        return new GraphQLiteController($server, $httpCodeDecider, $messageFactory, DebugFlag::RETHROW_UNSAFE_EXCEPTIONS);
     }
 
     private function newRequest(): Request

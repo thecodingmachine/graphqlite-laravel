@@ -20,6 +20,7 @@ use Symfony\Component\Cache\Psr16Cache;
 use TheCodingMachine\GraphQLite\Context\Context;
 use TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
+use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
 use TheCodingMachine\GraphQLite\Laravel\Listeners\CachePurger;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters\ValidateFieldMiddleware;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapper;
@@ -84,19 +85,22 @@ class GraphQLiteServiceProvider extends ServiceProvider
         if (!$this->app->has(ResponseFactoryInterface::class)) {
             $this->app->bind(ResponseFactoryInterface::class, ResponseFactory::class);
         }
+        if (!$this->app->has(HttpCodeDeciderInterface::class)) {
+            $this->app->bind(HttpCodeDeciderInterface::class, HttpCodeDecider::class);
+        }
 
         $this->app->bind(HttpMessageFactoryInterface::class, PsrHttpFactory::class);
 
         $this->app->singleton(GraphQLiteController::class, function (Application $app) {
             $debug = config('graphqlite.debug', DebugFlag::RETHROW_UNSAFE_EXCEPTIONS);
-            $controller = new GraphQLiteController($app[StandardServer::class], $app[HttpMessageFactoryInterface::class], $debug);
-            $decider = config('graphqlite.decider');
-
-            if (!empty($decider)) {
-                $controller->setCodeDecider($app[$decider]);
+            $decider = config('graphqlite.http_code_decider');
+            if (!$decider) {
+                $httpCodeDecider = $app[HttpCodeDeciderInterface::class];
+            } else {
+                $httpCodeDecider = $app[$decider];
             }
 
-            return $controller;
+            return new GraphQLiteController($app[StandardServer::class], $httpCodeDecider, $app[HttpMessageFactoryInterface::class], $debug);
         });
 
         $this->app->singleton(StandardServer::class, static function (Application $app) {
