@@ -2,6 +2,8 @@
 
 namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\SchemaConfig;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -21,6 +23,7 @@ use TheCodingMachine\GraphQLite\Context\Context;
 use TheCodingMachine\GraphQLite\Exceptions\WebonyxErrorHandler;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDecider;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
+use TheCodingMachine\GraphQLite\Laravel\Console\Commands\GraphqliteExportSchema;
 use TheCodingMachine\GraphQLite\Laravel\Listeners\CachePurger;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\Parameters\ValidateFieldMiddleware;
 use TheCodingMachine\GraphQLite\Laravel\Mappers\PaginatorTypeMapper;
@@ -71,6 +74,10 @@ class GraphQLiteServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->commands([
+            GraphqliteExportSchema::class,
+        ]);
+
         $this->app->bind(WebonyxSchema::class, Schema::class);
 
         if (!$this->app->has(ServerRequestFactoryInterface::class)) {
@@ -145,6 +152,14 @@ class GraphQLiteServiceProvider extends ServiceProvider
             $service->addParameterMiddleware($app[ValidateFieldMiddleware::class]);
 
             $service->addTypeMapperFactory($app[PaginatorTypeMapperFactory::class]);
+
+            // We need to configure an empty Subscription type to avoid an exception in the generate-schema command.
+            $config = SchemaConfig::create();
+            $config->setSubscription(new ObjectType([
+                'name' => 'Subscription',
+                'fields' => [],
+            ]));
+            $service->setSchemaConfig($config);
 
             $controllers = config('graphqlite.controllers', 'App\\Http\\Controllers');
             if (!is_iterable($controllers)) {
