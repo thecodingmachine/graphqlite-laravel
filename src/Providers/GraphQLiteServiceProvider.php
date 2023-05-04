@@ -3,6 +3,7 @@
 namespace TheCodingMachine\GraphQLite\Laravel\Providers;
 
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
 use GraphQL\Type\SchemaConfig;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
@@ -157,7 +158,12 @@ class GraphQLiteServiceProvider extends ServiceProvider
             $config = SchemaConfig::create();
             $config->setSubscription(new ObjectType([
                 'name' => 'Subscription',
-                'fields' => [],
+                'fields' => [
+                    'dummy' => [
+                        'type' => Type::string(),
+                        'description' => 'Dummy field to avoid an exception in the generate-schema command.',
+                    ],
+                ],
             ]));
             $service->setSchemaConfig($config);
 
