@@ -153,14 +153,6 @@ class GraphQLiteServiceProvider extends ServiceProvider
 
             $service->addTypeMapperFactory($app[PaginatorTypeMapperFactory::class]);
 
-            // We need to configure an empty Subscription type to avoid an exception in the generate-schema command.
-            $config = SchemaConfig::create();
-            $config->setSubscription(new ObjectType([
-                'name' => 'Subscription',
-                'fields' => [],
-            ]));
-            $service->setSchemaConfig($config);
-
             $controllers = config('graphqlite.controllers', 'App\\Http\\Controllers');
             if (!is_iterable($controllers)) {
                 $controllers = [ $controllers ];
