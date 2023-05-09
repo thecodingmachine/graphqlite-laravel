@@ -2,8 +2,8 @@
 
 namespace TheCodingMachine\GraphQLite\Laravel\Console\Commands;
 
-use GraphQL\Utils\SchemaPrinter;
 use Illuminate\Console\Command;
+use TheCodingMachine\GraphQLite\Laravel\Utils\SchemaPrinter;
 use TheCodingMachine\GraphQLite\Schema;
 
 /**
