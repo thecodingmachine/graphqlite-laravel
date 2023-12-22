@@ -10,13 +10,10 @@ use Orchestra\Testbench\TestCase;
 use TheCodingMachine\GraphQLite\Http\HttpCodeDeciderInterface;
 use TheCodingMachine\GraphQLite\Laravel\Listeners\CachePurger;
 use TheCodingMachine\GraphQLite\Schema;
-use TheCodingMachine\TDBM\TDBMService;
-use function json_decode;
 use Illuminate\Http\Request;
 use Symfony\Bridge\PsrHttpMessage\Factory\PsrHttpFactory;
 use TheCodingMachine\GraphQLite\Laravel\Controllers\GraphQLiteController;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
-
 
 class GraphQLiteServiceProviderTest extends TestCase
 {
@@ -165,6 +162,32 @@ GQL
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
 
         $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorMultiple(foo:"192.168.1.1") }']);
+        $this->assertSame(200, $response->getStatusCode(), $response->getContent());
+    }
+
+    /**
+     * This test the 'Validate' Attribute. In older versions the 'rule' property
+     * of the Validate constructor was normalized but wrong value was checked.
+     * Now the Validate attribute should works properly if it's initialized
+     * with something like this: "#[Validate('some-rule')]".
+     */
+    public function testValidatorForParameterPHP8()
+    {
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorForParameterPHP8(foo:"") }']);
+        $response->assertJson([
+            'errors' => [
+                [
+                    'extensions' => [
+                        'argument' => 'foo',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertStringContainsString('The foo field is required.', $response->json('errors')[0]['message']);
+        $this->assertSame(400, $response->getStatusCode(), $response->getContent());
+
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorForParameterPHP8(foo:"not-empty") }']);
         $this->assertSame(200, $response->getStatusCode(), $response->getContent());
     }
 

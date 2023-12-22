@@ -55,4 +55,14 @@ class TestController
     {
         return 'success';
     }
+
+    /** @Query() */
+    public function testValidatorForParameterPHP8(
+        #[Validate("required")]
+        string $foo,
+        #[Validate("sometimes")]
+        null|string $bar,
+    ): string {
+        return 'success';
+    }
 }
