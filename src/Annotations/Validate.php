@@ -42,7 +42,7 @@ class Validate implements ParameterAnnotationInterface
                 $this->for = ltrim($values['for'], '$');
             }
         }
-        if (! isset($this->rule)) {
+        if (empty($this->rule)) {
             throw new BadMethodCallException('The @Validate annotation must be passed a rule. For instance: "#Validate("email")" in PHP 8+ or "@Validate(for="$email", rule="email")" in PHP 7+');
         }
     }
