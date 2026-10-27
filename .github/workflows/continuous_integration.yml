@@ -26,6 +26,8 @@ jobs:
             php-version: "8.1"
           - install-args: ""
             php-version: "8.2"
+          - install-args: ""
+            php-version: "8.3"
       fail-fast: false
 
     steps:
