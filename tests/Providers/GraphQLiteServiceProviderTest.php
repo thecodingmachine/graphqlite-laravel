@@ -187,7 +187,7 @@ GQL
         $this->assertStringContainsString('The foo field is required.', $response->json('errors')[0]['message']);
         $this->assertSame(400, $response->getStatusCode(), $response->getContent());
 
-        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorForParameterPHP8(foo:"not-empty") }']);
+        $response = $this->json('POST', '/graphql', ['query' => '{ testValidatorForParameterPHP8(foo:"not-empty", bar:"x") }']);
         $this->assertSame(200, $response->getStatusCode(), $response->getContent());
     }
 
