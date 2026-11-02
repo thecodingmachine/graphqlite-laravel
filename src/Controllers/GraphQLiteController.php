@@ -36,7 +36,7 @@ class GraphQLiteController
     /** @var HttpCodeDeciderInterface */
     private $httpCodeDecider;
 
-    public function __construct(StandardServer $standardServer, HttpCodeDeciderInterface $httpCodeDecider, HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = DebugFlag::RETHROW_UNSAFE_EXCEPTIONS)
+    public function __construct(StandardServer $standardServer, HttpCodeDeciderInterface $httpCodeDecider, ?HttpMessageFactoryInterface $httpMessageFactory = null, ?int $debug = DebugFlag::RETHROW_UNSAFE_EXCEPTIONS)
     {
         $this->standardServer = $standardServer;
         $this->httpCodeDecider = $httpCodeDecider;
