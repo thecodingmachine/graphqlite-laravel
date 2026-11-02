@@ -57,6 +57,10 @@ jobs:
             composer-${{ hashFiles('**/composer.json') }}-
             composer-
       - name: "Install dependencies with composer"
+        # Laravel 9 and 10 (the only versions installable on PHP 8.1, and the lowest ones) have published security
+        # advisories: Composer refuses to resolve them unless blocking is turned off. A library still tests against them.
+        env:
+          COMPOSER_NO_BLOCKING: "1"
         run: |
           composer update ${{ matrix.install-args }} --no-interaction --no-progress --prefer-dist
       - name: "Run tests with phpunit/phpunit"
