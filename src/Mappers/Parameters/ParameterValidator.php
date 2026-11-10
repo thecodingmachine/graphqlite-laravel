@@ -80,4 +80,20 @@ class ParameterValidator implements InputTypeParameterInterface
     {
         return $this->parameter->getDefaultValue();
     }
+
+    /**
+     * Part of InputTypeParameterInterface from GraphQLite 7
+     */
+    public function getName(): string
+    {
+        return $this->parameterName;
+    }
+
+    /**
+     * Part of InputTypeParameterInterface from GraphQLite 7
+     */
+    public function getDescription(): string
+    {
+        return method_exists($this->parameter, 'getDescription') ? $this->parameter->getDescription() : '';
+    }
 }
